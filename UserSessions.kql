@@ -1,0 +1,33 @@
+Session_SessionDetail
+| where Timestamp between (_startTime.._endTime)
+| summarize 
+    Machine = arg_max(Timestamp, Host),
+    ["Session ID"] = arg_max(Timestamp, SessionID), 
+    Protocol = arg_max(Timestamp, SessionProtocol),
+    ["Last state"] = arg_max(Timestamp, SessionConnectionState),
+    ["Remoting client"] = arg_max(Timestamp, SessionClientName),
+    LastSeen = arg_max(Timestamp, Timestamp),
+    SessionLogonTime = arg_max(Timestamp, SessionLogonTime),
+    User = arg_max(Timestamp, SessionUser),
+    ["Used apps"] = make_set(SessionFgProcessName),
+    ["Used web apps"] = make_set(SessionFgBrowserActiveTabHost),
+    SessionProtocols = make_set(SessionProtocol)
+    by SessionGUID
+| where SessionUser contains _user and SessionProtocols has "ICA"
+| where ['Used apps'] != "Microsoft Windows OS"
+| extend ["Last seen"] = format_datetime(LastSeen, "yyyy-MM-dd HH:mm:ss")
+| extend ["Logon time"] = format_datetime(SessionLogonTime, "yyyy-MM-dd HH:mm:ss")
+| extend SessionLogonTimeEpoch = todatetime(SessionLogonTime)
+| extend LastSeenEpoch = todatetime(LastSeen)
+| project 
+    Host,
+    SessionID,
+    SessionGUID,
+    SessionUser,
+    ["Logon time"],
+    ["Last seen"],
+    SessionConnectionState,
+    SessionProtocol,
+    ["Used apps"],
+    ["Used web apps"]
+| order by ["Logon time"] asc
