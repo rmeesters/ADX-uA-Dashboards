@@ -1,0 +1,12 @@
+Session_SessionDetail
+| where Timestamp between (_startTime.._endTime)
+| where SessionUser has _user 
+| where isnotempty(SessionFgAppId)
+| join kind = leftouter
+(Application_AppNameIdMapping
+| summarize by Host, AppId, AppName)
+on ($left.SessionFgAppId == $right.AppId) and ($left.Host == $right.Host)
+| project Host,SessionFgAppId, AppName
+| summarize ForegroundCount=count(AppName) by AppName
+| where not(AppName has_any("Microsoft.LockApp", "Citrix XenApp & XenDesktop"))
+| sort by ForegroundCount
