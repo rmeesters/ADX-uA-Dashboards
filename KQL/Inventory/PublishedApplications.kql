@@ -1,0 +1,4 @@
+Citrix_Applications
+| summarize arg_max(Timestamp, *) by Id
+| project Name, PublishedName, SiteName, DesktopGroupName, ApplicationGroupName
+| order by SiteName, Name asc 

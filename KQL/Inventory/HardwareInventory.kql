@@ -1,0 +1,17 @@
+System_MachineInventory
+| summarize arg_max(Timestamp, *) by Host
+| project 
+Host, 
+["Operating System"] = OsName, 
+["OS Version"] = OsVersion,
+["OS Architecture"] = OsArchitecture,
+["Manufacturer"] = HwManufacturer, 
+["Model/Type"] = HwModel,
+["Is Virtual"] = HwIsVirtualMachine,
+["Hypervisor"] = HwHypervisorVendor,
+["CPU Type"] = CPUName,
+["CPU Cores"] = CPUCoresPhysical, 
+["RAM Size"] = RAMSizeGB,
+["Citrix Farm"] = CtxFarmName,
+["Machine Catalog"] = CtxMachineCatalogName,
+["Delivery Group"] = CtxDeliveryGroupName

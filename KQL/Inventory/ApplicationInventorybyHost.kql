@@ -1,0 +1,11 @@
+Application_ApplicationInventory
+| where Host == _host
+| summarize 
+    arg_max(Timestamp, *),
+    Versions = dcount(DisplayVersion)
+    by DisplayName
+|    project 
+    Name = DisplayName,
+    Publisher,
+    ["#Versions of Application"] = Versions
+| order by tolower(Name) asc 

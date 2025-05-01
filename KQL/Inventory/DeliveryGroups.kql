@@ -1,0 +1,12 @@
+let dgTypeTable = datatable(dgTypeKey:int, ["Delivery Group Type"]:string)
+[
+   0, "Desktops Only",
+   1, "Apps Only",
+   2, "Desktops and Apps"
+];
+Citrix_DesktopGroups
+| summarize arg_max(Timestamp, *) by Id
+| join kind = leftouter
+(dgTypeTable)
+on $left.DeliveryType == $right.dgTypeKey
+| project Host, Name, SiteName , ["Delivery Group Type"]

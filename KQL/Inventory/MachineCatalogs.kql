@@ -1,0 +1,13 @@
+let provTypeTable = datatable(provTypeKey:int, ["Provisioning Method"]:string)
+[
+   0, "Unknown",
+   1, "MCS",
+   2, "PVS",
+  3,"Manual"
+];
+Citrix_Catalogs
+| summarize arg_max(Timestamp, *) by Id
+| join kind = leftouter
+(provTypeTable)
+on $left.ProvisioningType == $right.provTypeKey
+| project Host, Name, SiteName, ["Provisioning Method"]

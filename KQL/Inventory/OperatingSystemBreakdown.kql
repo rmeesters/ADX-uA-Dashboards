@@ -1,0 +1,5 @@
+System_MachineInventory
+| summarize arg_max(Timestamp, *) by Host
+| summarize Count = count() by OsName
+| project OsName, Count
+| order by Count desc

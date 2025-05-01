@@ -1,0 +1,4 @@
+Citrix_PublishedDesktops
+| summarize arg_max(Timestamp, *) by Id
+| project Name, PublishedName, SiteName, DesktopGroupName
+| order by SiteName, Name asc 
