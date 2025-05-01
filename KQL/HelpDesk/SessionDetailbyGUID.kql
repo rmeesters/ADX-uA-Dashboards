@@ -1,0 +1,50 @@
+Session_SessionDetail
+| where Timestamp between (_startTime.._endTime)
+| summarize 
+    arg_max(Timestamp, *)
+    by SessionGUID
+| where SessionGUID == _sessionGUID
+| project 
+    Property = pack_array(
+        "Remoting technology",
+        "Resolution",
+        "Initial published ressource",
+        "Started Citrix published apps",
+        "Encryption",
+        "Type",
+        "Session broker",
+        "Client IP (VMware)",
+        "Client timezone",
+        "Client MAC address",
+        "Client IP",
+        "Client name",
+        "Client Active Directory machine domain",
+        "Client user",
+        "Client Active Directory user domain",
+        "Client OS",
+        "Remoting client version",
+        "Client OS language",
+        "Client type"
+    ),
+    Data = pack_array(
+        SessionBrokerType,
+        SessionColorDepth,
+        SessionPublishedName,
+        SessionPublishedAppsCtx,
+        SessionEncryptionCtx,
+        SessionTypeVmw,
+        SessionBrokerDnsVmw,
+        SessionBrokerRemoteIpVmw,
+        SessionClientTimezoneVmw,
+        SessionClientMac,
+        SessionClientIp,
+        SessionClientName,
+        SessionClientDomain,
+        SessionClientUser,
+        SessionClientUserDomain,
+        SessionClientPlatform,
+        SessionClientVersion,
+        SessionClientOsLanguage,
+        SessionClientTypeCtx
+    )
+| mv-expand Property, Data

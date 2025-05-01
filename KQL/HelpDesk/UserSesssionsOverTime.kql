@@ -1,0 +1,5 @@
+Citrix_Machines
+| where Timestamp between (_startTime.._endTime)
+| summarize Count = count() by AgentVersion
+| extend AgentVersion = coalesce(AgentVersion, "N/A")
+| project AgentVersion, Count

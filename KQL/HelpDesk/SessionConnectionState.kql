@@ -1,0 +1,15 @@
+Session_SessionDetail
+| summarize 
+    arg_max(Timestamp, *)
+    by SessionGUID
+| where SessionGUID == _sessionGUID
+| extend SessionLogonTime = todatetime(SessionLogonTime),
+         LastSeen = todatetime(Timestamp)
+| project 
+Property = pack_array(
+        "Session Duration"
+        ),
+    Data = pack_array(
+        LastSeen - SessionLogonTime
+        )
+| mv-expand Property, Data

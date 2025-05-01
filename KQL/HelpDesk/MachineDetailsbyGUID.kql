@@ -1,0 +1,59 @@
+let sessionHost = toscalar(Session_SessionDetail
+| where SessionGUID == _sessionGUID
+| distinct Host); 
+System_MachineInventory
+| where Timestamp between (_startTime.._endTime)
+| summarize arg_max(Timestamp, *) by Host
+| where Host == sessionHost
+| join kind = leftouter
+(Citrix_Machines
+| summarize arg_max(Timestamp,*) by NameHost)
+on $left.Host == $right.NameHost
+| extend IsInMaintenanceMode = iff(IsInMaintenanceMode == 0, "No", "Yes"),
+         CurrentRegistrationState = iff(CurrentRegistrationState == 0, "No", "Yes")
+| project 
+    Property = pack_array(
+"AD domain DNS",
+        "AD domain NetBIOS",
+        "AD OU",
+        "AD site",
+        "CPU name",
+        "Citrix delivery group",
+        "Citrix site",
+        "Citrix machine catalog",
+        "Hardware",
+        "Hardware: is VM?",
+        "Hardware: has battery?",
+        "OS name",
+        "OS build",
+        "OS service pack name",
+        "OS service pack version",
+        "OS install date",
+        "OS architecture",
+        "RAM size (GB)",
+        "Registered",
+        "Maintence Mode"
+    ),
+    Data = pack_array(
+        AdDomainDns,
+        AdDomainNetBios,
+        AdOu,
+        AdSite,
+        CPUName,
+        CtxDeliveryGroupName,
+        SiteName,
+        CtxMachineCatalogName,
+        HwModel,
+        HwIsVirtualMachine,
+        IsBatteryPresent,
+        OsName,
+        OsBuild,
+        OsSpName,
+        OsSpVersion,
+        OsInstallDate,
+        OsArchitecture,
+        RAMSizeGB,
+        CurrentRegistrationState,
+        IsInMaintenanceMode
+    )
+| mv-expand Property, Data

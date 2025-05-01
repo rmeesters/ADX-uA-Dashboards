@@ -1,0 +1,9 @@
+Process_ProcessStartup
+| join kind = leftouter
+(Process_ProcessDetail)
+on $left.ProcGUID == $right.ProcGUID
+| where SessionGUID == _sessionGUID
+| summarize round(avg(ProcCPUPercent),2), round(avg(ProcGpuComputePercent),2), round(avg(ProcWorkingSetMB),1) by SessionGUID, ProcName
+| project-away SessionGUID
+| project-rename Process=ProcName,["Avg CPU %"]=avg_ProcCPUPercent,["Avg GPU %"]=avg_ProcGpuComputePercent,["Avg Mem (MB)"]=avg_ProcWorkingSetMB
+| order by Process asc 

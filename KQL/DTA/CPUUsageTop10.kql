@@ -1,0 +1,14 @@
+System_SystemPerformanceSummary2
+| where Timestamp > _startTime
+| summarize CPUUsagePercentRaw = avg(CPUUsagePercent), 
+            IOPercenttRaw = avg(IOPercentDiskTime), 
+            RAMUsagePercentRaw = avg(RAMUsagePercent), 
+            NetUsagePercentRaw = avg(NetUtilizationPercent) 
+            by Host
+| extend "avg(CPUUsagePercent)" == round(CPUUsagePercentRaw, 1),
+         "avg(IOPercentDiskTime)" == round(IOPercenttRaw, 2),
+         "avg(RAMUsagePercent)" == round(RAMUsagePercentRaw, 1),
+         "avg(NetUtilizationPercent)" == round(NetUsagePercentRaw, 3)     
+| top 10 by "avg(CPUUsagePercent)"
+| project Host, round(CPUUsagePercentRaw, 1)
+| sort by round(CPUUsagePercentRaw, 1)

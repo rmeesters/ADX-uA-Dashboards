@@ -1,0 +1,8 @@
+Logon_LogonDetail
+| where Timestamp > _startTime
+| summarize EventCount = count(), 
+            SumTotalLogonTimeMs = sum(TotalLogonTimeMs) 
+            by bin(Timestamp, 10000)
+| where isnotnull(SumTotalLogonTimeMs)
+| extend LogonDuration_sec = round(SumTotalLogonTimeMs / EventCount / 1000, 1)
+| project Timestamp, LogonDuration_sec

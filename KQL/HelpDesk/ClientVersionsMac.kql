@@ -1,0 +1,8 @@
+Session_SessionDetail
+| where Timestamp between (_startTime.._endTime)
+| where SessionBrokerType == "Citrix" and SessionClientPlatform contains "Mac"
+| summarize arg_max(Timestamp, *) by SessionGUID
+| summarize Count = count() by SessionClientVersion
+| project SessionClientVersion, Count
+| order by Count desc 
+
