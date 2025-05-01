@@ -1,0 +1,6 @@
+Logon_LogonDetail
+| summarize TotalLogonTimeMs = sum(TotalLogonTimeMs)
+    by SessionGUID
+| where SessionGUID == _sessionGUID
+| extend ["Total duration (seconds)"] = round(TotalLogonTimeMs / 1000.0, 2)
+| project ["Total duration (seconds)"]

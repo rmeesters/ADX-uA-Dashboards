@@ -1,0 +1,17 @@
+Session_SessionDetail
+| where Timestamp between (_startTime.._endTime)
+| summarize
+    arg_max(Timestamp, *)
+    by SessionGUID
+| join kind = innerunique Logon_LogonDetail on SessionGUID
+| extend ["Last seen"] = format_datetime(Timestamp, "yyyy-MM-dd HH:mm:ss")
+| extend ["Logon Time (seconds)"] = round(TotalLogonTimeMs / 1000, 2)
+| project
+    Host,
+    SessionGUID,
+    SessionUser,
+    ["Last seen"],
+    SessionConnectionState,
+    SessionProtocol,
+    ["Logon Time (seconds)"]
+| order by ["Last seen"] asc

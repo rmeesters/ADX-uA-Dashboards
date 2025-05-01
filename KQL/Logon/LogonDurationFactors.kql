@@ -1,0 +1,10 @@
+Logon_LogonDetail
+| where SessionGUID == _sessionGUID
+| extend ["Profile Load (sec)"] = round(ProfileLoadTimeMs / 1000.0, 2)
+| extend ["CPM Load (sec)"] = round(CitrixPMLoadTimeMs / 1000.0, 2)
+| extend ["DC DIscovery (sec)"] = round(DcDiscoveryTimeMs / 1000.0, 2)
+| extend ["GPO Time (sec)"] = round(GroupPolicyTotalProcessingTimeMs / 1000.0, 2)
+| extend ["GPP Script (sec)"] = round(GroupPolicyLogonScriptTimeMs / 1000.0, 2)
+| extend ["Logon Script (sec)"] = round(ADLogonScriptTimeMs / 1000.0, 2)
+| extend ["Shell Startup (sec)"] = round(ShellStartupTimeMs /1000.0, 2)
+| project ["Profile Load (sec)"], ["CPM Load (sec)"], ["DC DIscovery (sec)"], ["GPO Time (sec)"], ["GPP Script (sec)"], ["Logon Script (sec)"], ["Shell Startup (sec)"]
